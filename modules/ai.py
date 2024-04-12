@@ -16,7 +16,7 @@ genai.configure(api_key=GOOGLE_API_KEY)
 #temperature = randomness of result
 #token limit
 #system instructions --> you are fucking albert einstein who can solve every fucking problem in the world (ㅈ나 빨아주기)
-#embedding
+#embedding --> 
 
 #박이안 참고용:
     #gemini_use(input_text = text, input_image = image, input_file_API = fileAPI) --> output = response
