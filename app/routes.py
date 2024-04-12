@@ -10,7 +10,3 @@ def rand():
 @app.route("/")
 def index():
     return jsonify(message="hello!")
-
-@app.route("/realRandom", methods = ["GET"])
-def realRandom():
-    return jsonify(message=randomGen(3))
