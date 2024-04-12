@@ -10,3 +10,8 @@ def rand():
 @app.route("/")
 def index():
     return jsonify(message="hello!")
+
+
+@app.route("/test")
+def test():
+    return jsonify(gemini_use())
