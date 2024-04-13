@@ -25,45 +25,43 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 
 #embedding --> 
-global model
-global chat
-
-model = genai.GenerativeModel()
-chat = model.start_chat()
 
 #global variables
 def declare_model(model_number = 1.5, ability = []):
-    sys_instr_string = "You are an full-stack developer at Google who is fluent at programming and utilizing the following tools: "
+    sys_instr_string = "You are an Senior full-stack developer at Google who did a PhD at MIT named Dylan and is fluent at programming and utilizing the following tools: "
     for i in ability: #ability = list of abilities
         sys_instr_string += (i + ", ")
-
+    
     if(model_number == 1.0):
         #project_id = "PROJECT_ID"
         #location = "us-central1"
         #vertexai.init(project = project_id, location = location)
-        
         model = genai.GenerativeModel(
             "models/gemini-1.0-pro", #짧게 많이
             system_instruction = sys_instr_string,
             generation_config=genai.GenerationConfig(
-                temperature=0.9,
+                #max_output_tokens=2000,
+                temperature=0.9
             )
-        )
-        
-        
-        
+        ) 
     elif (model_number == 1.5):
         model = genai.GenerativeModel(
             "models/gemini-1.5-pro-latest", #한번에 많은양
             system_instruction = sys_instr_string,
             generation_config=genai.GenerationConfig(
-                temperature=0.9,
+                #max_output_tokens=2000,
+                temperature=0.9
             )
         )
-        chat = model.start_chat()
-        response = chat.send_message("From now, I'll give you the file directory and its content (code) of a project that I'm currently working on. Please, as I input the file directories and code, understand the relationships between the files and the code and until I text DONE, answer back in the format 'Received code in directory: ~/directory' of your project.")
-    
-    
+    return model
+
+def text_init(model):
+    chat = model.start_chat()
+    #response = chat.send_message("Hi, what's your name and what do you do for living?")
+    #print(response.text)
+    response = chat.send_message("Soon, I'll give you the file directory and its content (code) of a project that I'm currently working on. Please, as I input the file directories and code, understand the relationships between the files and the code. Answer back in the format 'Received code in directory: ~/directory (with an empty line in the end)' for all the files in your project.")
+    print(response.text)
+    return chat
     
 
 
@@ -74,25 +72,31 @@ def get_token_count(input_text): #chat history까지의 모든 token count를 �
     return model.count_tokens(input_text)
 
 
-def gemini_text(input_text = "what's ur name"):
+def gemini_text(model, input_text = "wait I need to go real quick, so I'll send you this later."):
     response = model.generate_content(input_text)
-    return response
+    return response.text
 
-def gemini_chat_send(input_text_list = []): #tuple_List (file_directory, content)
-    response = chat.send_message("hi whats ur name?")
-    print(response)
-    # for i in input_text_list:
-    #     input_text = "In the directory: " + i[0] + ", the code is: " + i[1]
-    #     response = chat.send_message(input_text)
+def gemini_chat_send(chat, input_text_list = [('code.txt', 'return 0')]): #tuple_List (file_directory, content)
+    for i in input_text_list:
+        input_text = "In the directory (" + i[0] + "), the code is: " + i[1] + "\n\n\n"
+        print(input_text)
+    response = chat.send_message(input_text)
+    print(response.text)
         
     
-
-def gemini_chat_return(input_text_list = ""):
-    response = chat.send_message(input_text_list)
+def gemini_chat_return(input_text_list = "Hello World"):
+    response = chat.send_message(input_text_list) #Question the User Prompts
     return chat.history
 
+async def wait(x):
+    await asyncio.sleep(x)
+
+#print(gemini_text())
+#gemini_chat_return("User Question")
+
+model = declare_model()
+chat = text_init(model) #make a new chat with that model
+asyncio.run(wait(5)) #time break를 줘서 코드 안터지게 관리 --> 솔직히 의미는 있을지는 불명
+gemini_chat_send(chat) #나중에 tuple list 추가해서 데이터 전송
 
 
-declare_model()
-#gemini_chat_send()
-#print(gemini_chat_return(''))
