@@ -97,6 +97,6 @@ async def wait(x):
 model = declare_model()
 chat = text_init(model) #make a new chat with that model
 asyncio.run(wait(5)) #time break를 줘서 코드 안터지게 관리 --> 솔직히 의미는 있을지는 불명
-gemini_chat_send(chat) #나중에 tuple list 추가해서 데이터 전송
+gemini_chat_send(chat, tuple_list) #나중에 tuple list 추가해서 데이터 전송
 
 
