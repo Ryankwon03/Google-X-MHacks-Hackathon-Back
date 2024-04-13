@@ -6,3 +6,5 @@ google.generativeai
 pillow
 PyGithub
 firebase-admin
+asyncio
+vertexai
