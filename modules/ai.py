@@ -66,15 +66,13 @@ def gemini_text(input_text):
     response = model.generate_content(input_text)
     return response
 
-def gemini_chat_send(input_text_list = ""):
-    chat.send_message("hi my name is ryan")
-    chat.send_message("what's ur name again?")
+def gemini_chat_send(input_text_list): #tuple list
+    
+    response = chat.send_message("what's ur name again?")
 
 
 def gemini_chat_return(input_text_list = ""):
-    # response = chat.send_message("this is my friend sean.")
-    # response = chat.send_message("whos the guy right next to you?")
-    # response = chat.send_message("bye i have to go now")
+    response = chat.send_message(input_text_list)
     return chat.history
 
 
