@@ -38,7 +38,6 @@ def gemini_use(input_text = "give me 10 random numbers", input_image = None, inp
     else: #제일 간단한 text-to-text
         return gemini_text_input(input_text)
     
-    return ''
             
   
 
