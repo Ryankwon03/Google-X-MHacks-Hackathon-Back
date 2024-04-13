@@ -1,12 +1,20 @@
 # Modules
 import os
 import asyncio
-from os.path import join, dirname
-from dotenv import load_dotenv
 import PIL.Image
-import google.generativeai as genai
 import vertexai
+import chromadb
+import numpy as np
+import pandas as pd
+import google.generativeai as genai
+import google.ai.generativelanguage as glm
+
+
+from dotenv import load_dotenv
+from os.path import join, dirname
 from vertexai.generative_models import GenerativeModel, ChatSession
+from IPython.display import Markdown
+from chromadb import Documents, EmbeddingFunction, Embeddings
 
 
 # API Key 는 GOOGLE_API_KEY 로 쓰시면 됩니다
@@ -77,11 +85,12 @@ def gemini_text(model, input_text = "wait I need to go real quick, so I'll send 
     return response.text
 
 def gemini_chat_send(chat, input_text_list = [('code.txt', 'return 0')]): #tuple_List (file_directory, content)
+    input_text = ""
     for i in input_text_list:
-        input_text = "In the directory (" + i[0] + "), the code is: " + i[1] + "\n\n\n"
-        print(input_text)
+        input_text += "In the directory (" + i[0] + "), the code is: " + i[1] + "\n\n\n"
     response = chat.send_message(input_text)
-    print(response.text)
+    #print(response.text)
+    return response.text
         
     
 def gemini_chat_return(input_text_list = "Hello World"):
@@ -91,12 +100,60 @@ def gemini_chat_return(input_text_list = "Hello World"):
 async def wait(x):
     await asyncio.sleep(x)
 
-#print(gemini_text())
-#gemini_chat_return("User Question")
-
-model = declare_model()
-chat = text_init(model) #make a new chat with that model
-asyncio.run(wait(5)) #time break를 줘서 코드 안터지게 관리 --> 솔직히 의미는 있을지는 불명
-gemini_chat_send(chat, tuple_list) #나중에 tuple list 추가해서 데이터 전송
 
 
+#Embeddings
+#text = "hello world"
+#result = genai.embed_content(model = "models/embedding-001", context = text) --> embedding content
+#content = ['text1', 'text2', 'text3']
+#for embedding in result['embedding'] --> print(str(embedding)) --> values of embedded contents
+
+#db = chroma db
+
+class GeminiEmbeddingFunction(EmbeddingFunction):
+    def __call__(self, input: Documents) -> Embeddings:
+        model = 'models/embedding-001'
+        title = "Custom query"
+        result = genai.embed_content(model = model,
+                                   content = input,
+                                   task_type = "retrieval_document",
+                                   title = title)
+        return result["embedding"]
+
+def create_chroma_db(documents, name):
+    chroma_client = chromadb.Client()
+    db = chroma_client.create_collection(name = name,
+                                         embedding_function = GeminiEmbeddingFunction())
+    for i, d in enumerate(documents):
+        db.add(
+            documents = [d],
+            ids = [str(i)]
+        )
+        return db
+    
+#use this by doing db = create_chroma_db(documents, "googlecarsdatabase")
+
+def get_relavant_passage(query, db): #KNN algorithm 써서 한다
+    passage = db.query(query_texts = [query], n_results = 1)['documents'][0][0]
+    return passage
+
+
+
+
+#DEMO RUN OF THE ABOVE
+
+#model = declare_model() 
+#chat = text_init(model) #make a new chat with that model
+#asyncio.run(wait(1)) #time break를 줘서 코드 안터지게 관리 --> 솔직히 의미는 있을지는 불명
+#gemini_chat_send(chat, tuple_list) #나중에 tuple list 추가해서 데이터 전송
+
+
+DOCUMENT1 = "Operating the Climate Control System  Your Googlecar has a climate control system that allows you to adjust the temperature and airflow in the car. To operate the climate control system, use the buttons and knobs located on the center console.  Temperature: The temperature knob controls the temperature inside the car. Turn the knob clockwise to increase the temperature or counterclockwise to decrease the temperature. Airflow: The airflow knob controls the amount of airflow inside the car. Turn the knob clockwise to increase the airflow or counterclockwise to decrease the airflow. Fan speed: The fan speed knob controls the speed of the fan. Turn the knob clockwise to increase the fan speed or counterclockwise to decrease the fan speed. Mode: The mode button allows you to select the desired mode. The available modes are: Auto: The car will automatically adjust the temperature and airflow to maintain a comfortable level. Cool: The car will blow cool air into the car. Heat: The car will blow warm air into the car. Defrost: The car will blow warm air onto the windshield to defrost it."
+DOCUMENT2 = "Your Googlecar has a large touchscreen display that provides access to a variety of features, including navigation, entertainment, and climate control. To use the touchscreen display, simply touch the desired icon.  For example, you can touch the \"Navigation\" icon to get directions to your destination or touch the \"Music\" icon to play your favorite songs."
+DOCUMENT3 = "Shifting Gears Your Googlecar has an automatic transmission. To shift gears, simply move the shift lever to the desired position.  Park: This position is used when you are parked. The wheels are locked and the car cannot move. Reverse: This position is used to back up. Neutral: This position is used when you are stopped at a light or in traffic. The car is not in gear and will not move unless you press the gas pedal. Drive: This position is used to drive forward. Low: This position is used for driving in snow or other slippery conditions."
+
+documents = [DOCUMENT1, DOCUMENT2, DOCUMENT3]
+db = create_chroma_db(documents, "googlecarsdatabase")
+passage = get_relavant_passage("touch screen features", db)
+
+print(passage)

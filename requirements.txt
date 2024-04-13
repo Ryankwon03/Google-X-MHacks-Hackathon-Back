@@ -6,3 +6,6 @@ google.generativeai
 pillow
 asyncio
 vertexai
+chromadb
+numpy
+pandas
