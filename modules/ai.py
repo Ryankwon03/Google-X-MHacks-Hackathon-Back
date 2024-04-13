@@ -5,8 +5,12 @@ from os.path import join, dirname
 from dotenv import load_dotenv
 import PIL.Image
 import google.generativeai as genai
+import vertexai
+from vertexai.generative_models import GenerativeModel, ChatSession
+
 
 # API Key 는 GOOGLE_API_KEY 로 쓰시면 됩니다
+
 dotenv_path = join(dirname(__file__),'.env')
 load_dotenv(dotenv_path)
 
@@ -28,12 +32,16 @@ model = genai.GenerativeModel()
 chat = model.start_chat()
 
 #global variables
-def declare_model(model_number = 1.0, ability = []):
+def declare_model(model_number = 1.5, ability = []):
     sys_instr_string = "You are an full-stack developer at Google who is fluent at programming and utilizing the following tools: "
     for i in ability: #ability = list of abilities
         sys_instr_string += (i + ", ")
 
     if(model_number == 1.0):
+        #project_id = "PROJECT_ID"
+        #location = "us-central1"
+        #vertexai.init(project = project_id, location = location)
+        
         model = genai.GenerativeModel(
             "models/gemini-1.0-pro", #짧게 많이
             system_instruction = sys_instr_string,
@@ -41,6 +49,9 @@ def declare_model(model_number = 1.0, ability = []):
                 temperature=0.9,
             )
         )
+        
+        
+        
     elif (model_number == 1.5):
         model = genai.GenerativeModel(
             "models/gemini-1.5-pro-latest", #한번에 많은양
@@ -49,9 +60,11 @@ def declare_model(model_number = 1.0, ability = []):
                 temperature=0.9,
             )
         )
+        chat = model.start_chat()
+        response = chat.send_message("From now, I'll give you the file directory and its content (code) of a project that I'm currently working on. Please, as I input the file directories and code, understand the relationships between the files and the code and until I text DONE, answer back in the format 'Received code in directory: ~/directory' of your project.")
     
-    chat = model.start_chat()
-
+    
+    
 
 
 def get_text(response):
@@ -61,15 +74,18 @@ def get_token_count(input_text): #chat history까지의 모든 token count를 �
     return model.count_tokens(input_text)
 
 
-def gemini_text(input_text):
-    
+def gemini_text(input_text = "what's ur name"):
     response = model.generate_content(input_text)
     return response
 
-def gemini_chat_send(input_text_list): #tuple list
+def gemini_chat_send(input_text_list = []): #tuple_List (file_directory, content)
+    response = chat.send_message("hi whats ur name?")
+    print(response)
+    # for i in input_text_list:
+    #     input_text = "In the directory: " + i[0] + ", the code is: " + i[1]
+    #     response = chat.send_message(input_text)
+        
     
-    response = chat.send_message("what's ur name again?")
-
 
 def gemini_chat_return(input_text_list = ""):
     response = chat.send_message(input_text_list)
@@ -78,5 +94,5 @@ def gemini_chat_return(input_text_list = ""):
 
 
 declare_model()
-gemini_chat_send()
-print(gemini_chat_return(''))
+#gemini_chat_send()
+#print(gemini_chat_return(''))
