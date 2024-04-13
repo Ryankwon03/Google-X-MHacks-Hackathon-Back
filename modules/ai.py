@@ -1,15 +1,21 @@
 # Modules
-import os
-from os.path import join, dirname
-from dotenv import load_dotenv
+# import os
+# from os.path import join, dirname
+# from dotenv import load_dotenv
+
 import PIL.Image
 import google.generativeai as genai
 
-# API Key 는 GOOGLE_API_KEY 로 쓰시면 됩니다
-dotenv_path = join(dirname(__file__),'.env')
-load_dotenv(dotenv_path)
+from app import GOOGLE_API_KEY
 
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+# print(GOOGLE_API_KEY)
+
+# API Key 는 GOOGLE_API_KEY 로 쓰시면 됩니다
+# dotenv_path = join(dirname(__file__),'.env')
+# load_dotenv(dotenv_path)
+
+# GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+# print(GOOGLE_API_KEY)
 genai.configure(api_key=GOOGLE_API_KEY)
 
 
@@ -76,5 +82,3 @@ def gemini_chat(input_text_list = "what's ur name"):
     response = chat.send_message("bye i have to go now")
     return chat.history
     
-
-print(gemini_chat())

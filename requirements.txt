@@ -4,3 +4,5 @@ flask-cors
 python-dotenv
 google.generativeai
 pillow
+PyGithub
+firebase-admin
