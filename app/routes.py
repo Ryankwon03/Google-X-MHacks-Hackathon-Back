@@ -30,11 +30,16 @@ def getRepoInfo(repoName,AuthKey):
     processedList = makeList(curRepo,contents)
     return processedList
 
-@app.route("/init")
+@app.route("/init", methods = ["POST"])
 def initProject():
     data=request.get_json()
-    repoName = request.args.get("repoName")
-    AuthKey = request.args.get("AuthKey")
+    print(data)
+    repoName = data["repoName"]
+    AuthKey = data["AuthKey"]
+    # repoName = request.args.get("repoName")
+    # AuthKey = request.args.get("AuthKey")
+    print(repoName)
+    print(AuthKey)
     # repoInfo = getRepoInfo("p4-drones", "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")
     repoInfo = getRepoInfo(repoName,AuthKey)
     model = declare_model()
