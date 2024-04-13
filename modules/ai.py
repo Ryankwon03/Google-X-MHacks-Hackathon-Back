@@ -13,38 +13,46 @@ GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 
 
-#temperature = randomness of result
-#token limit
-#system instructions --> you are fucking albert einstein who can solve every fucking problem in the world (ㅈ나 빨아주기)
+#model tuning --> AI 학습 시스템
+
+
+
+
 #embedding --> 
 
-#박이안 참고용:
-    #gemini_use(input_text = text, input_image = image, input_file_API = fileAPI) --> output = response
+#global variables
+model = genai.GenerativeModel( #나중에 바꾸기
+    "models/gemini-1.5-pro-latest",
+    system_instruction = "YOU ARE ALBERT EINSTEIN",
+    generation_config=genai.GenerationConfig(
+        max_output_tokens=2000,
+        temperature=0.9,
+    )
+)
+
+
 
 def get_text(response):
     return response.text
 
-#get_index
-#get_token_count
-#get_safety_rating_warnings
-#get_finish_reason --> 1 = completed
+def get_token_count(input_text): #chat history까지의 모든 token count를 구할수 있지만 필요 X
+    return model.count_tokens(input_text)
 
 
-def gemini_use(input_text = "give me 10 random numbers", input_image = None, input_file_API = None):
-    if(input_file_API != None):
-        return ''
-    elif(input_image != None): #image exists --> use vision pro
-        return ''
-    else: #제일 간단한 text-to-text
-        return gemini_text_input(input_text)
+
+
+def gemini_use(input_text = "give me 10 random numbers"):
+    return gemini_text_input(input_text)
     
-            
-  
 
 def gemini_text_input(input_text):
-    model = genai.GenerativeModel('gemini-pro')
     response = model.generate_content(input_text)
     return response
 
+def gemini_chat(input_text_list = "what's ur name"):
+    chat = model.start_chat()
+    response = chat.send_message("hi my name is ryan")
+    return response
+    
 
-print(get_text(gemini_use()))
+print(get_text(gemini_chat()))
