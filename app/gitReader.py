@@ -14,7 +14,7 @@ def getAllContents(repo):
 def makeListFromRepo(repo, contents):
     res = []
     for content_file in contents:
-        if content_file.name.endswith((".txt", ".DS_Store", ".tar.gz", ".zip" , ".pdf", ".tgz", ".exe")):
+        if content_file.name.endswith((".txt", ".DS_Store", ".tar.gz", ".zip" , ".pdf", ".tgz", ".exe", ".png", ".jpg", ".jpeg", ".svg", ".ico", ".ttf", ".otf")):
             continue
         if content_file.type == "file":
             try:
