@@ -82,7 +82,7 @@ def text_init(model):
     chat = model.start_chat()
     #response = chat.send_message("Hi, what's your name and what do you do for living?")
     #print(response.text) Please, as I input the file directories and code, understand the relationships between the files and the code. Answer back in the format 'Received code in directory: ~/directory (with an empty line in the end)' for all the files in your project. 
-    response = chat.send_message("Soon, I'll give you the file directory and its content (code) of a project that I'm currently working on. At the end, provide me with a detailed explanation of the project.")
+    response = chat.send_message("Soon, I'll give you the file directory and its content (code) of a project that I'm currently working on. At the end, please provide me with a structural overview explaining the link between file names, functions names, etc.")
     print(response.text)
     return chat
     
@@ -118,7 +118,7 @@ def gemini_chat_return(chat, input_text = "Hello World"):
     response = chat.send_message(input_text) #Question the User Prompts
     return chat.history
 
-def gemini_continue_asking(chat, training_data, user_chat_history, new_user_question,curBestQuery):
+def gemini_continue_asking(chat, training_data, user_chat_history, new_user_question,curBestContext):
     input_text = "The following is the code for my project: "
     # for i in training_data:
     #     input_text += (i + "\n")
@@ -139,7 +139,7 @@ def gemini_continue_asking(chat, training_data, user_chat_history, new_user_ques
     initial_response = chat.send_message(input_text)
     user_question = f"Can you please answer this question for me: {new_user_question}"
     user_question += "\n"
-    user_question += f"This can be some relevant information of my question, containing some explanations about a similar project: {curBestQuery}"
+    user_question += f"This can be some relevant information of my question, containing some explanations about a similar project: {curBestContext[0]}"
     print(user_question)
     print(initial_response.text)
     response = chat.send_message(user_question)

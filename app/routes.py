@@ -16,9 +16,10 @@ from uuid import uuid4
 def getBestQuery(text):
     results = myChromaDB.query(
         query_texts=[text],
-        n_results=1
+        n_results=3,
+        include=['distances','embeddings','documents']
     )
-    return results['distances'][0][0], results['documents'][0][0]
+    return results['distances'][0], results['documents'][0], results['embeddings'][0]
 
 
 @app.route("/debug/query/<input_text>")
