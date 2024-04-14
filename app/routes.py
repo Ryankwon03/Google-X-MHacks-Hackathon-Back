@@ -60,7 +60,7 @@ def askQuestioninProject():
     curChat = {'user' : data['query'], 'model' : geminiAnswer}
     appendChatHistorytoFireStore(data['userid'],data['projectid'],curChat)
 
-    return jsonify(message="yeayea")
+    return jsonify(geminiAnswer = geminiAnswer)
 
 
     
@@ -126,10 +126,11 @@ def userSignintoApp():
     data = request.get_json()
     userEmail = data['email']
     userid = userEmail[:userEmail.find("@")]
-
+    userProjectRef = db.reference(f'/users/{userid}/projectList')
+    # USER HAS NO PROJECTS
     # User Exists
     if checkUserExist(userid):
-        return jsonify(isNew=False, userid=userid)
+        return jsonify(isNew=False, userid=userid, hasProjects=(not userProjectRef.get() == None))
     else:
         newUserRef = db.reference(f'/users/{userid}')
         user_data = {
@@ -138,7 +139,7 @@ def userSignintoApp():
             "lastName" : data['lastName']
         }
         newUserRef.set(user_data)
-        return jsonify(isNew=True,userid=userid)
+        return jsonify(isNew=True,userid=userid, hasProjects=(userProjectRef.get() == None))
         
 
 

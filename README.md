@@ -31,14 +31,31 @@ Response:
 - `message`: Has Useful Message (successfully created user / Error Name)
 
 
-### Initializing a New Project (`/init`)
-URL: `/init`\
+## Project(`/project`)
+
+### Initializing a New Project (`/project/init`)
+URL: `/project/init`\
 Method: `POST`\
 Request Body:
 - `repoName`: (string) name of the repository
 - `authKey`: (string) Access Key for the repository
+- `userid`: (string) userid
+- `projectName`: (string) Project Name
+- `techTags`: (list) list of technical Tags
 
 Response:
 - `message`: "successfully read the repo {repoName}"
 - `geminiResponse`: Output from Gemini after training the repository
+
+
+### Sending a Chat to Initialized Project (`/project/askQuestion`)
+URL: `/project/askQuestion`\
+Method: `POST`\
+Request Body:
+- `userid`: userid
+- `projectid`: id of the project
+- `query`: text input of the question of the user
+
+Response:
+- `geminiAnswer`: Markdown Format of Gemini's answer
 
