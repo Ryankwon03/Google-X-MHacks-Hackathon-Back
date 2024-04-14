@@ -35,12 +35,12 @@ genai.configure(api_key=GOOGLE_API_KEY)
 #embedding --> 
 
 #global variables
-def declare_model(model_number = 1.5, ability = []):
+def declare_model(model_number = '1.5', ability = []):
     sys_instr_string = "You are an Senior full-stack developer at Google who did a PhD at MIT named Dylan and is fluent at programming and utilizing the following tools: "
     for i in ability: #ability = list of abilities
         sys_instr_string += (i + ", ")
     
-    if(model_number == 1.0):
+    if(model_number == '1.0'):
         #project_id = "PROJECT_ID"
         #location = "us-central1"
         #vertexai.init(project = project_id, location = location)
@@ -51,8 +51,17 @@ def declare_model(model_number = 1.5, ability = []):
                 #max_output_tokens=2000,
                 temperature=0.9
             )
-        ) 
-    elif (model_number == 1.5):
+        )
+    elif (model_number == 'image'): #FOR IMAGES
+        model = genai.GenerativeModel(
+            "gemini-pro-vision", #이미지
+            system_instruction = sys_instr_string,
+            generation_config=genai.GenerationConfig(
+                #max_output_tokens=2000,
+                temperature=0.9
+            )
+        )
+    elif (model_number == '1.5'):
         model = genai.GenerativeModel(
             "models/gemini-1.5-pro-latest", #한번에 많은양
             system_instruction = sys_instr_string,
@@ -80,8 +89,12 @@ def get_token_count(model, input_text): #chat history까지의 모든 token coun
     return model.count_tokens(input_text)
 
 
-def gemini_text(model, input_text = "wait I need to go real quick, so I'll send you this later."):
+def gemini_text(model, input_text = "What is your name?"):
     response = model.generate_content(input_text)
+    return response.text
+
+def gemini_image_and_text(model = 1.1, input_text = "", image = ""):
+    response = model.generate_content([input_text, image])
     return response.text
 
 def gemini_chat_send(chat, input_text_list = [('code.txt', 'return 0')]): #tuple_List (file_directory, content)
