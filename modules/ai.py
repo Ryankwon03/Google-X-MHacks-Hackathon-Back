@@ -143,7 +143,7 @@ def make_prompt(query, relevant_passage):
     prompt = ("""
     QUESTION: '{query}'
     Past question: '{relevant_passage}'
-    (This is a past question that another person has asked in the past for a reference of how detailed I want the answer to be)
+    (This is a past question that another person has asked in the past for a reference of how detailed and in-depth I want the answer to be. If the Past question is irrelevant to the actual QUESTION, you may ignore it. However, if Past question is more detailed and in-depth, you may also integrate this question to the actual prompt to answer with more depth. However, you must answer the original question first, then add details if needed.)
     
     """).format(query=query, relevant_passage=escaped)
 
@@ -164,8 +164,6 @@ DOCUMENT2 = "Your Googlecar has a large touchscreen display that provides access
 DOCUMENT3 = "Shifting Gears Your Googlecar has an automatic transmission. To shift gears, simply move the shift lever to the desired position.  Park: This position is used when you are parked. The wheels are locked and the car cannot move. Reverse: This position is used to back up. Neutral: This position is used when you are stopped at a light or in traffic. The car is not in gear and will not move unless you press the gas pedal. Drive: This position is used to drive forward. Low: This position is used for driving in snow or other slippery conditions."
 DOCUMENT4 = "A American girl named Seoin is pretty"
 DOCUMENT5 = "A Korean guy named sungmo is pretty"
-
-
 
 documents = [DOCUMENT1, DOCUMENT2, DOCUMENT3, DOCUMENT4, DOCUMENT5] #여기에 들어가는 query 는 유저가 넣은 query
 #박이안이 이렇게 추가해서 쓰는거
