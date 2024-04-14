@@ -6,6 +6,13 @@ firebase_admin.initialize_app(cred, {"databaseURL" : "https://hackathon-new-f76f
 
 firestore_db = firestore.client()
 
+def getProjectNamewithProjectid(userid,projectid):
+    projectRef = firestore_db.collection(userid).document(projectid)
+    projectDoc = projectRef.get()
+    print(projectDoc)
+    return projectDoc.to_dict()['projectName']
+
+
 def saveProjecttoFireStore(userid, projectName, train_history):
     data = {
         'projectName' : projectName,
@@ -15,19 +22,3 @@ def saveProjecttoFireStore(userid, projectName, train_history):
     document_ref.set(data)
     return document_ref.id
 
-
-def getDBSize():
-    return db.reference("/curSize").get()
-
-def addSize():
-    cursize = getDBSize()
-    db.reference("/curSize").set(cursize + 1)
-
-def addUsertoDB(userID,password):
-    size = getDBSize()
-    user_data = {
-        "password" : password
-    }
-    db.reference(f'/users/{userID}').set(user_data)
-    # db.reference(f'/users/{userID}/password').set(password)
-    addSize()

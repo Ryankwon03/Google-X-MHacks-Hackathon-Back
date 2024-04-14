@@ -29,7 +29,6 @@ def addProjecttoUserID(userid,projectid):
     if userRef.get() == None:
         projectList = [projectid]
         userRef.set(projectList)
-    
     # USER HAS PROJECTS
     else:
         curList = userRef.get()
@@ -37,30 +36,56 @@ def addProjecttoUserID(userid,projectid):
         userRef.set(curList)
     return userRef.get()
 
+def readProjectList(userid):
+    userProjectListRef = db.reference(f'/users/{userid}/projectList')
+    userProjectList = []
+    for projectid in userProjectListRef.get():
+        print(projectid)
+        projectName = getProjectNamewithProjectid(userid,projectid)
+        entry = {'projectid' : projectid, 'projectName' : projectName}
+        userProjectList.append(entry)
+    return userProjectList
+
 
     
+@app.route("/project/loadProjects", methods=["GET"])
+def loadProjectsasList():
+    userid=request.args.get('userid')
+    projectList = readProjectList(userid)
+    return jsonify(projectList=projectList)
+
 
 @app.route("/project/init", methods = ["POST"])
 def initProject():
     data=request.get_json()
+    # Reads the form data
     repoName = data["repoName"]
     authKey = data["authKey"]
     userid = data["userid"]
     projectName = data["projectName"]
+    techTags = data["techTags"]
+
+    # Reads Repo as List of Tuples
     repoInfo = getRepoInfo(repoName,authKey)
+
+    # Gemini Training
     model = declare_model()
     chat = text_init(model)
     geminiResponse=gemini_chat_send(chat,repoInfo)
-    print(geminiResponse)
-    print(geminiResponse[0])
-    train_history = json.dumps(str(geminiResponse[0]))
-    print(train_history)
 
+
+
+    # print(geminiResponse)
+    # print(geminiResponse[0])
+    # train_history = json.dumps(str(geminiResponse[0]))
+    # print(train_history)
+
+    # Saving Informations to Database
     projectid = saveProjecttoFireStore(userid,projectName, json.dumps(str(geminiResponse[0])))
-    print(projectid)
+    # print(projectid)
     addProjecttoUserID(userid,projectid)
 
-    return jsonify(message=f"succesfully read the repo {repoName}.", geminiResponse=geminiResponse[1])
+    return jsonify(message=f"succesfully read the repo {repoName}.", geminiResponse=geminiResponse[1], projectid=projectid)
 
 def addUsertoRealTimeDB(userid, data):
     userRef = db.reference(f'/users/{userid}')
