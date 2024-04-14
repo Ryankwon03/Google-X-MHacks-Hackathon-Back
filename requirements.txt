@@ -8,3 +8,7 @@ PyGithub
 firebase-admin
 asyncio
 vertexai
+chromadb
+numpy
+pandas
+ipython

@@ -9,14 +9,20 @@ firestore_db = firestore.client()
 def getProjectNamewithProjectid(userid,projectid):
     projectRef = firestore_db.collection(userid).document(projectid)
     projectDoc = projectRef.get()
-    print(projectDoc)
     return projectDoc.to_dict()['projectName']
+
+def getProjectData(userid,projectid):
+    projectRef = firestore_db.collection(userid).document(projectid)
+    projectDoc = projectRef.get().to_dict()
+    return projectDoc
+
 
 
 def saveProjecttoFireStore(userid, projectName, train_history):
     data = {
         'projectName' : projectName,
-        'train_history' : train_history
+        'train_history' : train_history,
+        'user_chat_history' : ""
     }
     document_ref = firestore_db.collection(userid).document()
     document_ref.set(data)
