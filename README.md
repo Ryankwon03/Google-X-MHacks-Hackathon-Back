@@ -17,18 +17,18 @@
 
 ## User (`/user`)
 
-### Signing Up a New User (`/user/signup`)
-URL: `/user/signup`\
+### Signing In a User (`/user/signin`)
+URL: `/user/signin`\
 Method: `POST`\
 Request Body:
 - `email`: (string) email of the user
-- `password`: (string) password of the user
+- `firstName`: First Name of the user
+- `lastName`: Last Name of the user
 
 Response:
-- `statusCode`: 
-    - 200: OK
-    - 400: Bad Request
-- `message`: Has Useful Message (successfully created user / Error Name)
+- `isNew`: (boolean) true if the user is newly created in the Database
+- `userid`: id of the user signed in
+- `hasProjects`: (boolean) true if the user has AT LEAST ONE project
 
 
 ## Project (`/project`)
