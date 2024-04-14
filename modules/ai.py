@@ -120,9 +120,9 @@ class GeminiEmbeddingFunction(EmbeddingFunction):
                                    title = title)
         return result["embedding"]
 
-def create_chroma_db(documents, name):
-    chroma_client = chromadb.Client()
-    db = chroma_client.create_collection(name = name,
+def create_chroma_db(client, documents, name):
+    #chroma_client = chromadb.Client()
+    db = client.create_collection(name = name,
                                          embedding_function = GeminiEmbeddingFunction())
     for i, d in enumerate(documents):
         db.add(
@@ -130,6 +130,7 @@ def create_chroma_db(documents, name):
             ids = [str(i)]
         )
     return db
+
     
 #use this by doing db = create_chroma_db(documents, "googlecarsdatabase")
 
@@ -139,18 +140,15 @@ def get_relavant_passage(query, db): #KNN algorithm 써서 한다
 
 def make_prompt(query, relevant_passage):
     escaped = relevant_passage.replace("'", "").replace('"', "").replace("\n", " ")
-    prompt = ("""You are a helpful and informative bot that answers questions using text from the reference passage included below. \
-    Be sure to respond in a complete sentence, being comprehensive, including all relevant background information. \
-    However, you are talking to a non-technical audience, so be sure to break down complicated concepts and \
-    strike a friendly and converstional tone. \
-    If the passage is irrelevant to the answer, you may ignore it.
+    prompt = ("""
     QUESTION: '{query}'
-    PASSAGE: '{relevant_passage}'
-
-        ANSWER:
+    Past question: '{relevant_passage}'
+    (This is a past question that another person has asked in the past for a reference of how detailed I want the answer to be)
+    
     """).format(query=query, relevant_passage=escaped)
 
     return prompt
+
 
 
 #DEMO RUN OF THE ABOVE
@@ -167,11 +165,15 @@ DOCUMENT3 = "Shifting Gears Your Googlecar has an automatic transmission. To shi
 DOCUMENT4 = "A American girl named Seoin is pretty"
 DOCUMENT5 = "A Korean guy named sungmo is pretty"
 
+
+
 documents = [DOCUMENT1, DOCUMENT2, DOCUMENT3, DOCUMENT4, DOCUMENT5] #여기에 들어가는 query 는 유저가 넣은 query
 #박이안이 이렇게 추가해서 쓰는거
 db = create_chroma_db(documents, "googlecarsdatabase")
-passage = get_relavant_passage("touchscreen", db)
-print(passage)
+#passage = get_relavant_passage("touchscreen", db)
+#print(passage)
+
+print()
 
 # query = "How do you use the touchscreen in the Google car?"
 # prompt = make_prompt(query, passage)
