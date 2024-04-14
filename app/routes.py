@@ -62,7 +62,7 @@ def askQuestioninProject():
     data = request.get_json()
     projectData = getProjectData(data['userid'],data['projectid'])
     techTags = projectData['techTags']
-    model = declare_model(techTags)
+    model = declare_model('1.5',techTags)
     chat = text_init(model)
     # This is chat history
     geminiResponse=gemini_continue_asking(chat, projectData['train_history'], projectData['user_chat_history'],data['query'])
@@ -99,7 +99,7 @@ def initProject():
     repoInfo = getRepoInfo(repoName,authKey)
 
     # Gemini Training
-    model = declare_model(techTags)
+    model = declare_model("1.5",techTags)
     chat = text_init(model)
     geminiResponse=gemini_chat_send(chat,repoInfo)
 
