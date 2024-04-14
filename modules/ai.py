@@ -41,7 +41,7 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 #global variables
 def declare_model(model_number = '1.5', ability = []):
-    sys_instr_string = "You are an expert code commentator, specialized in providing clear and concise explanations for "
+    sys_instr_string = "Your names Dylan, an expert code commentator, specialized in providing clear and concise explanations for "
     for i in range(0,len(ability) - 1):
         sys_instr_string += f'{ability[i]}, '
     sys_instr_string += f'and {ability[len(ability) - 1]}. '
