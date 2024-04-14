@@ -12,6 +12,7 @@ dotenv_path = join('.env')
 load_dotenv(dotenv_path)
 
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")   
+FIREBASE_API_KEY = os.environ.get("FIREBASE_API_KEY")
 # print(GOOGLE_API_KEY)
 
 from app import routes

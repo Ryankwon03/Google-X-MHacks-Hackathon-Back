@@ -6,13 +6,14 @@ firebase_admin.initialize_app(cred, {"databaseURL" : "https://hackathon-new-f76f
 
 firestore_db = firestore.client()
 
-def save_to_firebase(userEmail, repoName, chat_history):
+def saveProjecttoFireStore(userid, projectName, train_history):
     data = {
-        'chat_history' : chat_history
+        'projectName' : projectName,
+        'train_history' : train_history
     }
-    document_ref = firestore_db.collection('projectFiles').document()
+    document_ref = firestore_db.collection(userid).document()
     document_ref.set(data)
-    print('Document ID:', document_ref.id)
+    return document_ref.id
 
 
 def getDBSize():

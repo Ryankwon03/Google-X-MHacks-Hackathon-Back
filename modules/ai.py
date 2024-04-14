@@ -86,7 +86,7 @@ def gemini_chat_send(chat, input_text_list = [('code.txt', 'return 0')]): #tuple
     for i in input_text_list:
         input_text += "In the directory (" + i[0] + "), the code is: " + i[1] + "\n\n\n"
     response = chat.send_message(input_text)
-    return response.text
+    return chat.history, response.text
     print(response.text)
 
         
