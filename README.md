@@ -1,10 +1,12 @@
-## Project Structure
+# 2024 Google x Mhacks Hackathon Backend
+**by Ian Park, Sungmo Kwon**
+## Main Features
+- Provides basic CRUD for managing users and projects
+- Utilizes embedding to filter out best resources for each projects, which includes queries, context, etc.
+- Adapt Gemini 1.5's API calls in a way that amplifies its strength
 
 
-### Frontend
-
-
-### Backend
+## Backend Project Structure
 - `run.py` : Main driver for Flask backend application
 - `app/` : Application Package for Project Backend
     - `routes.py`
@@ -13,7 +15,7 @@
     - `ai.py` : Temporary python file
 - `venv/` : Configuration for Virtual Environment
 
-## API Endpoints
+# API Endpoints
 
 ## User (`/user`)
 
@@ -71,8 +73,8 @@ Response:
     - `projectName` : name of the project
 * Example: responseObj[0]['projectid'] = id of the first project (each dictionary entries are sorted by creation time)
 
-### Getting Previous Chat History (`/project/getChatHistory`)
-URL: `/project/getChatHistory`\
+### Getting Previous Chat History (`/project/getChatHistory/<userid>/<projectid>`)
+URL: `/project/getChatHistory/<userid>/<projectid>`\
 Method: `GET`\
 Request Parameters:
 - `userid`: userid
@@ -85,3 +87,14 @@ Response:
     - `model`: Answer from Gemini
     * Obviously, indexes are sorted in chronological order
 * Example: responseObj[0]['user'] contains the first question of the user, and responseObj[0]['model'] contains the answer to that question.
+
+### Deleting a Project from a user (`/project/deleteProject`)
+URL: `/project/deleteProject`\
+Method: `DELETE`\
+Request Parameters:
+- `userid`: userid
+- `projectid`: projectid
+
+Response:
+- `statusCode` : 200 if successfully Deleted
+- `message` : "delte!!"
