@@ -74,9 +74,10 @@ def askQuestioninProject():
 
 
     
-@app.route("/project/loadProjects", methods=["GET"])
-def loadProjectsasList():
-    userid=request.args.get('userid')
+@app.route("/project/loadProjects/<userid>", methods=["GET"])
+def loadProjectsasList(userid):
+    # userid=request.args.get('userid')
+    print(userid)
     projectList = readProjectList(userid)
     return jsonify(projectList=projectList)
 
