@@ -148,8 +148,6 @@ def gemini_continue_asking(chat, training_data, user_chat_history, new_user_ques
     # response = chat.send_message(input_text)
     return chat.history
 
-async def wait(x):
-    await asyncio.sleep(x)
 
 
 
@@ -161,45 +159,8 @@ async def wait(x):
 
 #db = chroma db
 
-class GeminiEmbeddingFunction(EmbeddingFunction):
-    def __call__(self, input: Documents) -> Embeddings:
-        model = 'models/embedding-001'
-        title = "Custom query"
-        result = genai.embed_content(model = model,
-                                   content = input,
-                                   task_type = "retrieval_document",
-                                   title = title)
-        return result["embedding"]
-
-def create_chroma_db(documents, name):
-    chroma_client = chromadb.Client()
-    db = chroma_client.create_collection(name = name,
-                                         embedding_function = GeminiEmbeddingFunction())
-    for i, d in enumerate(documents):
-        db.add(
-            documents = [d],
-            ids = [str(i)]
-        )
-    return db
-
-
     
 #use this by doing db = create_chroma_db(documents, "googlecarsdatabase")
-
-def get_relavant_passage(query, db): #KNN algorithm 써서 한다
-    passage = db.query(query_texts = [query], n_results = 1)['documents'][0][0]
-    return passage
-
-def make_prompt(query, relevant_passage):
-    escaped = relevant_passage.replace("'", "").replace('"', "").replace("\n", " ")
-    prompt = ("""
-    QUESTION: '{query}'
-    Past question: '{relevant_passage}'
-    (This is a past question that another person has asked in the past for a reference of how detailed and in-depth I want the answer to be. If the Past question is irrelevant to the actual QUESTION, you may ignore it. However, if Past question is more detailed and in-depth, you may also integrate this question to the actual prompt to answer with more depth. However, you must answer the original question first, then add details if needed.)
-    
-    """).format(query=query, relevant_passage=escaped)
-
-    return prompt
 
 
 

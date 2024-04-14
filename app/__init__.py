@@ -26,4 +26,3 @@ class GeminiEmbeddingFunction(chromadb.EmbeddingFunction):
 myChromaDB = chromadb.Client().create_collection(name="myCodingCollection", embedding_function=GeminiEmbeddingFunction())
 
 from app import routes
-from app import user

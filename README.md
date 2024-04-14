@@ -9,10 +9,12 @@
 ## Backend Project Structure
 - `run.py` : Main driver for Flask backend application
 - `app/` : Application Package for Project Backend
-    - `routes.py`
-        : python file containing API endpoint routes
+    - `routes.py` : python file containing API endpoint routes
+    - `firebase.py` : Functions that helps with using Firebase features, especially Realtime Database and FireStore Database
+    - `gitReader.py` : Functions that helps with reading GitHub repositories using PyGitHub Library
+
 - `modules/` : This directory contains the logistics of using Gemini API.
-    - `ai.py` : Temporary python file
+    - `ai.py` : AI Library for this app
 - `venv/` : Configuration for Virtual Environment
 
 # API Endpoints

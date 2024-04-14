@@ -5,7 +5,6 @@ from app import myChromaDB
 from flask import jsonify, request
 from modules.ai import *
 from app.gitReader import *
-from app.user import *
 from app.helper import *
 from app.firebase import *
 from app import FIREBASE_API_KEY
