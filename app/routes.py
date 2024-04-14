@@ -21,7 +21,7 @@ def getRepoInfo(repoName,AuthKey):
     processedList = makeListFromRepo(curRepo,contents)
     return processedList
 
-@app.route("/init", methods = ["POST"])
+@app.route("/project/init", methods = ["POST"])
 def initProject():
     data=request.get_json()
     repoName = data["repoName"]
@@ -43,7 +43,7 @@ def newUserSignup():
             email=data['email'],
             password=data['password']
         )
-        return jsonify(statusCode=200, message=f"Successfully created user: {user.uid} ({user.email}) ")
+        return jsonify(statusCode=200, message=f"Successfully created user: {user.uid} ({user.email}) ({user.password})")
     except Exception as error:
         return jsonify(statusCode=400, message=f'{str(error)}')
 
@@ -55,14 +55,13 @@ def newUserSignup():
     # return jsonify(statuscode=200, message=f'User {userEmail} successfully signed up!')
 
 
-# @app.route("/user/login", methods=["POST"])
-# def userLogin():
-#     data = request.get_json()
-#     try:
-#         usercred = auth.get_user_by_email()
-#         user = auth.sign_in_with_email_and_password(data['email'], data['password'])
-#         return jsonify(statusCode=200, message=f"Successfully signed in user: {user.uid} ({user.email})")
-#     except Exception as error:
-#         return jsonify(statusCode=400, message=f'{str(error)}')
+@app.route("/user/login", methods=["POST"])
+def userLogin():
+    data = request.get_json()
+    try:
+        user = auth.sign_in_with_email_and_password(data['email'], data['password'])
+        return jsonify(statusCode=200, message=f"Successfully signed in user: {user.uid} ({user.email})")
+    except Exception as error:
+        return jsonify(statusCode=400, message=f'{str(error)}')
 
 # curl -d "@data.json" -H "Content-Type: application/json" -X POST http://localhost:3000/signup

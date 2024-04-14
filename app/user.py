@@ -1,6 +1,7 @@
 # from app import app
 # from flask import jsonify, request
-# from app.database import *
+# from app.firebase import *
+
 
 # # @app.route("/user/create", methods=["GET"])
 # def makeUser(userEmail, password):
