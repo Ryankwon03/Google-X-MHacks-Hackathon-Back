@@ -17,21 +17,21 @@
 
 ## User (`/user`)
 
-### Signing Up a New User (`/user/signup`)
-URL: `/user/signup`\
+### Signing In a User (`/user/signin`)
+URL: `/user/signin`\
 Method: `POST`\
 Request Body:
 - `email`: (string) email of the user
-- `password`: (string) password of the user
+- `firstName`: First Name of the user
+- `lastName`: Last Name of the user
 
 Response:
-- `statusCode`: 
-    - 200: OK
-    - 400: Bad Request
-- `message`: Has Useful Message (successfully created user / Error Name)
+- `isNew`: (boolean) true if the user is newly created in the Database
+- `userid`: id of the user signed in
+- `hasProjects`: (boolean) true if the user has AT LEAST ONE project
 
 
-## Project(`/project`)
+## Project (`/project`)
 
 ### Initializing a New Project (`/project/init`)
 URL: `/project/init`\
@@ -59,3 +59,29 @@ Request Body:
 Response:
 - `geminiAnswer`: Markdown Format of Gemini's answer
 
+### Retrieving Projects as List (`/project/loadProjects`)
+URL: `/project/loadProjects`\
+Method: `GET`\
+Request Parameters:
+- `userid`: userid
+
+Response:
+- `projectList`: List of dictionary. Each index contains two pairs of key & value. Keys include:
+    - `projectid` : id of the project
+    - `projectName` : name of the project
+* Example: responseObj[0]['projectid'] = id of the first project (each dictionary entries are sorted by creation time)
+
+### Getting Previous Chat History (`/project/getChatHistory`)
+URL: `/project/getChatHistory`\
+Method: `GET`\
+Request Parameters:
+- `userid`: userid
+- `projectid`: id of the project
+
+
+Response:
+- `user_chat_history`: List of dictionary. Each index contains two paris of key & value. Keys include:
+    - `user`: Question that user asked
+    - `model`: Answer from Gemini
+    * Obviously, indexes are sorted in chronological order
+* Example: responseObj[0]['user'] contains the first question of the user, and responseObj[0]['model'] contains the answer to that question.

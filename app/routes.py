@@ -48,6 +48,15 @@ def readProjectList(userid):
 
 
 
+@app.route("/project/getChatHistory", methods = ["GET"])
+def getChatHistoryofProject():
+    userid = request.args.get('userid')
+    projectid = request.args.get('projectid')
+    chatList = getChatHistoryfromFireStore(userid,projectid)
+    return jsonify(user_chat_history=chatList)
+
+
+
 @app.route("/project/askQuestion", methods=["POST"])
 def askQuestioninProject():
     data = request.get_json()
