@@ -59,7 +59,7 @@ def readProjectList(userid):
     userProjectListRef = db.reference(f'/users/{userid}/projectList')
     userProjectList = []
     for projectid in userProjectListRef.get():
-        print(projectid)
+        # print(projectid)
         projectName = getProjectNamewithProjectid(userid,projectid)
         entry = {'projectid' : projectid, 'projectName' : projectName}
         userProjectList.append(entry)
@@ -67,10 +67,10 @@ def readProjectList(userid):
 
 
 
-@app.route("/project/getChatHistory", methods = ["GET"])
-def getChatHistoryofProject():
-    userid = request.args.get('userid')
-    projectid = request.args.get('projectid')
+@app.route("/project/getChatHistory/<userid>/<projectid>", methods = ["GET"])
+def getChatHistoryofProject(userid,projectid):
+    userid = request.view_args['userid']
+    projectid = request.view_args['projectid']
     chatList = getChatHistoryfromFireStore(userid,projectid)
     return jsonify(user_chat_history=chatList)
 
@@ -112,7 +112,7 @@ def deleteProject():
 @app.route("/project/loadProjects/<userid>", methods=["GET"])
 def loadProjectsasList(userid):
     # userid=request.args.get('userid')
-    print(userid)
+    # print(userid)
     projectList = readProjectList(userid)
     return jsonify(projectList=projectList)
 
