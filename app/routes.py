@@ -1,6 +1,7 @@
 # Modules
 
 from app import app
+from app import myChromaDB
 from flask import jsonify, request
 from modules.ai import *
 from app.gitReader import *
@@ -12,9 +13,27 @@ import requests
 import json
 from uuid import uuid4
 
+def getBestQuery(text):
+    results = myChromaDB.query(
+        query_texts=[text],
+        n_results=1
+    )
+    return results['distances'][0][0], results['documents'][0][0]
+
+
+@app.route("/debug/query/<input_text>")
+def getQueryfromLocal(input_text):
+    print(input_text)
+    curQuery = getBestQuery(input_text)
+    return jsonify(best_match_distance = curQuery[0], best_match_content = curQuery[1])
+
 @app.route("/")
 def index():
-    return jsonify(message="hello!")
+    results = myChromaDB.query(
+        query_texts=["DFS algorithm and Map.cpp"],
+        n_results=1
+    )
+    return jsonify(message="hello!", curSize = get_chromadb_size(), chromaResults = results)
 
 def getRepoInfo(repoName,AuthKey):
     g = logintoGithub(AuthKey)
@@ -64,16 +83,32 @@ def askQuestioninProject():
     techTags = projectData['techTags']
     model = declare_model('1.5',techTags)
     chat = text_init(model)
+    curBestQuery = getBestQuery(data['query'])
     # This is chat history
-    geminiResponse=gemini_continue_asking(chat, projectData['train_history'], projectData['user_chat_history'],data['query'])
+    geminiResponse=gemini_continue_asking(chat, projectData['train_history'], projectData['user_chat_history'],data['query'],curBestQuery[1])
     geminiAnswer = str(geminiResponse[5])[17:-17]
     curChat = {'user' : data['query'], 'model' : geminiAnswer}
     appendChatHistorytoFireStore(data['userid'],data['projectid'],curChat)
 
     return jsonify(geminiAnswer = geminiAnswer)
 
+def deleteFromUser(userid, deleteProjectid):
+    userProjectListRef = db.reference(f'/users/{userid}/projectList')
+    userProjectList = []
+    for projectid in userProjectListRef.get():
+        if not projectid == deleteProjectid:
+            userProjectList.append(projectid)
+    userProjectListRef.set(userProjectList)
 
-    
+
+@app.route("/project/deleteProject", methods = ["DELETE"])
+def deleteProject():
+    data = request.get_json()
+    deleteFromFireStore(data['userid'],data['projectid'])
+    deleteFromUser(data['userid'],data['projectid'])
+    return jsonify(statusCode=200, message="delte!!")
+
+
 @app.route("/project/loadProjects/<userid>", methods=["GET"])
 def loadProjectsasList(userid):
     # userid=request.args.get('userid')
@@ -91,8 +126,6 @@ def initProject():
     userid = data["userid"]
     projectName = data["projectName"]
 
-    # TODO: Modify techTags
-
     techTags = data["techTags"]
 
     # Reads Repo as List of Tuples
@@ -103,12 +136,13 @@ def initProject():
     chat = text_init(model)
     geminiResponse=gemini_chat_send(chat,repoInfo)
 
-
-
-    # print(geminiResponse)
-    # print(geminiResponse[0])
-    # train_history = json.dumps(str(geminiResponse[0]))
-    # print(train_history)
+    # Add the Overview to Chromadb
+    myChromaDB.add(
+        documents=[geminiResponse[1]],
+        ids=[str(get_chromadb_size())]
+    )
+    increase_chromadb_size_1()
+    print("added Embedding to Chromadb")
 
     # Saving Informations to Database
     projectid = saveProjecttoFireStore(userid,projectName, json.dumps(str(geminiResponse[0])), techTags)

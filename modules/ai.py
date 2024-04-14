@@ -9,7 +9,6 @@ from app import GOOGLE_API_KEY
 # from dotenv import load_dotenv
 
 import PIL.Image
-import vertexai
 import chromadb
 import numpy as np
 import pandas as pd
@@ -19,7 +18,6 @@ import google.ai.generativelanguage as glm
 
 # from dotenv import load_dotenv
 # from os.path import join, dirname
-from vertexai.generative_models import GenerativeModel, ChatSession
 from IPython.display import Markdown
 from chromadb import Documents, EmbeddingFunction, Embeddings
 
@@ -83,8 +81,8 @@ def declare_model(model_number = '1.5', ability = []):
 def text_init(model):
     chat = model.start_chat()
     #response = chat.send_message("Hi, what's your name and what do you do for living?")
-    #print(response.text)
-    response = chat.send_message("Soon, I'll give you the file directory and its content (code) of a project that I'm currently working on. Please, as I input the file directories and code, understand the relationships between the files and the code. Answer back in the format 'Received code in directory: ~/directory (with an empty line in the end)' for all the files in your project.")
+    #print(response.text) Please, as I input the file directories and code, understand the relationships between the files and the code. Answer back in the format 'Received code in directory: ~/directory (with an empty line in the end)' for all the files in your project. 
+    response = chat.send_message("Soon, I'll give you the file directory and its content (code) of a project that I'm currently working on. At the end, provide me with a detailed explanation of the project.")
     print(response.text)
     return chat
     
@@ -110,6 +108,7 @@ def gemini_chat_send(chat, input_text_list = [('code.txt', 'return 0')]): #tuple
     for i in input_text_list:
         input_text += "In the directory (" + i[0] + "), the code is: " + i[1] + "\n\n\n"
     response = chat.send_message(input_text)
+    print(response.text)
     return chat.history, response.text
     print(response.text)
 
@@ -119,7 +118,7 @@ def gemini_chat_return(chat, input_text = "Hello World"):
     response = chat.send_message(input_text) #Question the User Prompts
     return chat.history
 
-def gemini_continue_asking(chat, training_data, user_chat_history, new_user_question):
+def gemini_continue_asking(chat, training_data, user_chat_history, new_user_question,curBestQuery):
     input_text = "The following is the code for my project: "
     # for i in training_data:
     #     input_text += (i + "\n")
@@ -139,6 +138,9 @@ def gemini_continue_asking(chat, training_data, user_chat_history, new_user_ques
 
     initial_response = chat.send_message(input_text)
     user_question = f"Can you please answer this question for me: {new_user_question}"
+    user_question += "\n"
+    user_question += f"This can be some relevant information of my question, containing some explanations about a similar project: {curBestQuery}"
+    print(user_question)
     print(initial_response.text)
     response = chat.send_message(user_question)
     # input_text += "\n"
@@ -179,6 +181,7 @@ def create_chroma_db(documents, name):
             ids = [str(i)]
         )
     return db
+
 
     
 #use this by doing db = create_chroma_db(documents, "googlecarsdatabase")

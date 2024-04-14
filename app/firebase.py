@@ -6,6 +6,15 @@ firebase_admin.initialize_app(cred, {"databaseURL" : "https://hackathon-new-f76f
 
 firestore_db = firestore.client()
 
+def get_chromadb_size():
+    ref = db.reference("/curChromadbSize")
+    return ref.get()
+
+def increase_chromadb_size_1():
+    ref = db.reference("/curChromadbSize")
+    curVal = ref.get()
+    ref.set(curVal + 1)
+
 def getProjectNamewithProjectid(userid,projectid):
     projectRef = firestore_db.collection(userid).document(projectid)
     projectDoc = projectRef.get()
@@ -47,3 +56,6 @@ def saveProjecttoFireStore(userid, projectName, train_history,techTags):
     document_ref.set(data)
     return document_ref.id
 
+def deleteFromFireStore(userid,projectid):
+    doc_ref = firestore_db.collection(userid).document(projectid)
+    doc_ref.delete()
