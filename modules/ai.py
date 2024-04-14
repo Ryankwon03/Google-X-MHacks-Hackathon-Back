@@ -76,7 +76,7 @@ def text_init(model):
 def get_text(response):
     return response.text
 
-def get_token_count(input_text): #chat history까지의 모든 token count를 구할수 있지만 필요 X
+def get_token_count(model, input_text): #chat history까지의 모든 token count를 구할수 있지만 필요 X
     return model.count_tokens(input_text)
 
 
@@ -91,10 +91,22 @@ def gemini_chat_send(chat, input_text_list = [('code.txt', 'return 0')]): #tuple
     response = chat.send_message(input_text)
     #print(response.text)
     return response.text
-        
     
-def gemini_chat_return(input_text_list = "Hello World"):
-    response = chat.send_message(input_text_list) #Question the User Prompts
+def gemini_chat_return(chat, input_text = "Hello World"):
+    response = chat.send_message(input_text) #Question the User Prompts
+    return chat.history
+
+def gemini_continue_asking(chat, training_data, user_chat_history, new_user_question):
+    input_text = "The following is the code for my project: "
+    for i in training_data:
+        input_text += (i + "\n")
+    input_text += "\n"
+    input_text += "Here are the questions that I asked to you previously: "
+    for i in user_chat_history:
+        input_text += (i + "\n")
+    input_text += "\n"
+    input_text += ("Looking at the above, answer this question for me: " + new_user_question)
+    response = chat.send_message(input_text)
     return chat.history
 
 async def wait(x):
@@ -120,9 +132,9 @@ class GeminiEmbeddingFunction(EmbeddingFunction):
                                    title = title)
         return result["embedding"]
 
-def create_chroma_db(client, documents, name):
-    #chroma_client = chromadb.Client()
-    db = client.create_collection(name = name,
+def create_chroma_db(documents, name):
+    chroma_client = chromadb.Client()
+    db = chroma_client.create_collection(name = name,
                                          embedding_function = GeminiEmbeddingFunction())
     for i, d in enumerate(documents):
         db.add(
@@ -162,16 +174,13 @@ def make_prompt(query, relevant_passage):
 DOCUMENT1 = "Operating the Climate Control System  Your Googlecar has a climate control system that allows you to adjust the temperature and airflow in the car. To operate the climate control system, use the buttons and knobs located on the center console.  Temperature: The temperature knob controls the temperature inside the car. Turn the knob clockwise to increase the temperature or counterclockwise to decrease the temperature. Airflow: The airflow knob controls the amount of airflow inside the car. Turn the knob clockwise to increase the airflow or counterclockwise to decrease the airflow. Fan speed: The fan speed knob controls the speed of the fan. Turn the knob clockwise to increase the fan speed or counterclockwise to decrease the fan speed. Mode: The mode button allows you to select the desired mode. The available modes are: Auto: The car will automatically adjust the temperature and airflow to maintain a comfortable level. Cool: The car will blow cool air into the car. Heat: The car will blow warm air into the car. Defrost: The car will blow warm air onto the windshield to defrost it."
 DOCUMENT2 = "Your Googlecar has a large touchscreen display that provides access to a variety of features, including navigation, entertainment, and climate control. To use the touchscreen display, simply touch the desired icon.  For example, you can touch the \"Navigation\" icon to get directions to your destination or touch the \"Music\" icon to play your favorite songs."
 DOCUMENT3 = "Shifting Gears Your Googlecar has an automatic transmission. To shift gears, simply move the shift lever to the desired position.  Park: This position is used when you are parked. The wheels are locked and the car cannot move. Reverse: This position is used to back up. Neutral: This position is used when you are stopped at a light or in traffic. The car is not in gear and will not move unless you press the gas pedal. Drive: This position is used to drive forward. Low: This position is used for driving in snow or other slippery conditions."
-DOCUMENT4 = "A American girl named Seoin is pretty"
-DOCUMENT5 = "A Korean guy named sungmo is pretty"
 
-documents = [DOCUMENT1, DOCUMENT2, DOCUMENT3, DOCUMENT4, DOCUMENT5] #여기에 들어가는 query 는 유저가 넣은 query
+documents = [DOCUMENT1, DOCUMENT2, DOCUMENT3] #여기에 들어가는 query 는 유저가 넣은 query
 #박이안이 이렇게 추가해서 쓰는거
 db = create_chroma_db(documents, "googlecarsdatabase")
-#passage = get_relavant_passage("touchscreen", db)
-#print(passage)
+passage = get_relavant_passage("phone screen", db)
+print(passage)
 
-print()
 
 # query = "How do you use the touchscreen in the Google car?"
 # prompt = make_prompt(query, passage)
