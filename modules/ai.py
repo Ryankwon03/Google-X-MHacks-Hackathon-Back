@@ -127,8 +127,10 @@ def gemini_continue_asking(chat, training_data, user_chat_history, new_user_ques
     input_text += "\n"
 
     input_text += "Here are the questions that I asked to you, along with your response, previously: "
-    for i in user_chat_history:
-        input_text += (i + "\n")
+    for chunk in user_chat_history:
+        input_text += "My question was: " + chunk['user'] + ".\n"
+        input_text += "Your response was: " + chunk['model'] + ".\n"
+
     # for i in range(0, len(user_chat_history), 2):
     input_text += "\n"
 

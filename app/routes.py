@@ -47,17 +47,6 @@ def readProjectList(userid):
     return userProjectList
 
 
-def parse_chat_history(chat_history_string):
-    parts_string=chat_history_string.strip("[]").split(", parts {")
-
-    chat_messages = []
-    for part in parts_string:
-        lines = part.strip().splitlines()
-        text = lines[0].split(":", 1)[1].strip()[1:-1]
-        role = lines[1].split(":", 1)[1].strip()
-        chat_messages.append({"text": text, "role": role})
-    return chat_messages
-
 
 @app.route("/project/askQuestion", methods=["POST"])
 def askQuestioninProject():
@@ -67,13 +56,10 @@ def askQuestioninProject():
     chat = text_init(model)
     # This is chat history
     geminiResponse=gemini_continue_asking(chat, projectData['train_history'], projectData['user_chat_history'],data['query'])
-    print(f'Length of response is: {len(geminiResponse)}')
-    print(f'Length of Gemini\'s answer is :{len(str(geminiResponse[5]))}')
-    print(str(geminiResponse[5])[13:-12])
-    parsedChatHistory = parse_chat_history(json.dumps(geminiResponse))
-    print(parse_chat_history)
+    geminiAnswer = str(geminiResponse[5])[17:-17]
+    curChat = {'user' : data['query'], 'model' : geminiAnswer}
+    appendChatHistorytoFireStore(data['userid'],data['projectid'],curChat)
 
-    print(geminiResponse)
     return jsonify(message="yeayea")
 
 
