@@ -17,11 +17,11 @@ def getProjectData(userid,projectid):
     return projectDoc
 
 
-# def getChatHistoryfromFireStore(userid,projectid):
-#     doc_ref = firestore_db.collection(userid).document(projectid)
-#     doc = doc_ref.get()
-#     curChatList = doc.to_dict()['user_chat_history']
-#     return curChatList
+def getChatHistoryfromFireStore(userid,projectid):
+    doc_ref = firestore_db.collection(userid).document(projectid)
+    doc = doc_ref.get()
+    curChatList = doc.to_dict()['user_chat_history']
+    return curChatList
 
 
 def appendChatHistorytoFireStore(userid, projectid, chatList):
