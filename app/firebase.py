@@ -36,11 +36,12 @@ def appendChatHistorytoFireStore(userid, projectid, chatList):
     })
 
 
-def saveProjecttoFireStore(userid, projectName, train_history):
+def saveProjecttoFireStore(userid, projectName, train_history,techTags):
     data = {
         'projectName' : projectName,
         'train_history' : train_history,
-        'user_chat_history' : []
+        'user_chat_history' : [],
+        'techTags' : techTags
     }
     document_ref = firestore_db.collection(userid).document()
     document_ref.set(data)

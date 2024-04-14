@@ -61,7 +61,8 @@ def getChatHistoryofProject():
 def askQuestioninProject():
     data = request.get_json()
     projectData = getProjectData(data['userid'],data['projectid'])
-    model = declare_model()
+    techTags = projectData['techTags']
+    model = declare_model(techTags)
     chat = text_init(model)
     # This is chat history
     geminiResponse=gemini_continue_asking(chat, projectData['train_history'], projectData['user_chat_history'],data['query'])
@@ -90,13 +91,14 @@ def initProject():
     projectName = data["projectName"]
 
     # TODO: Modify techTags
-    # techTags = data["techTags"]
+
+    techTags = data["techTags"]
 
     # Reads Repo as List of Tuples
     repoInfo = getRepoInfo(repoName,authKey)
 
     # Gemini Training
-    model = declare_model()
+    model = declare_model(techTags)
     chat = text_init(model)
     geminiResponse=gemini_chat_send(chat,repoInfo)
 
@@ -108,7 +110,7 @@ def initProject():
     # print(train_history)
 
     # Saving Informations to Database
-    projectid = saveProjecttoFireStore(userid,projectName, json.dumps(str(geminiResponse[0])))
+    projectid = saveProjecttoFireStore(userid,projectName, json.dumps(str(geminiResponse[0])), techTags)
     # print(projectid)
     addProjecttoUserID(userid,projectid)
 

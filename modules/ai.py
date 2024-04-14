@@ -17,8 +17,8 @@ import google.generativeai as genai
 import google.ai.generativelanguage as glm
 
 
-from dotenv import load_dotenv
-from os.path import join, dirname
+# from dotenv import load_dotenv
+# from os.path import join, dirname
 from vertexai.generative_models import GenerativeModel, ChatSession
 from IPython.display import Markdown
 from chromadb import Documents, EmbeddingFunction, Embeddings
