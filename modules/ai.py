@@ -43,10 +43,11 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 #global variables
 def declare_model(model_number = '1.5', ability = []):
-    sys_instr_string = "You are an Senior full-stack developer at Google who did a PhD at MIT named Dylan and is fluent at programming and utilizing the following tools: "
-    for i in ability: #ability = list of abilities
-        sys_instr_string += (i + ", ")
-    
+    sys_instr_string = "You are an expert code commentator, specialized in providing clear and concise explanations for "
+    for i in range(0,len(ability) - 1):
+        sys_instr_string += f'{ability[i]}, '
+    sys_instr_string += f'and {ability[len(ability) - 1]}. '
+    sys_instr_string += "Your primary responsibility is to help others understand the functionality, structure, and logic of the code by providing detailed comments. You will explain the purpose of different variables, functions, and classes, as well as the interactions between them. Your comments will also highlight any edge cases, potential issues, or areas for improvement. Your goal is to make the code as accessible and understandable as possible to a wide range of developers, from beginners to experts."
     if(model_number == '1.0'):
         #project_id = "PROJECT_ID"
         #location = "us-central1"
